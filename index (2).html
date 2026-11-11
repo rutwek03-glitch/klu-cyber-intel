@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberPulse Daily // KLU Cyber Threat Intel & Certification Station</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts: JetBrains Mono & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind Custom Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            black: '#06080e',
+                            dark: '#0b0f19',
+                            panel: '#111827',
+                            border: '#1e293b',
+                            cyan: '#00f3ff',
+                            red: '#ff0055',
+                            gold: '#ffb703',
+                            green: '#00ff88',
+                            purple: '#9d4edd'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['JetBrains Mono', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Futuristic Cyber Styling */
+        body {
+            background-color: #06080e;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Cyber Grid Background */
+        .cyber-grid-bg {
+            background-image: 
+                linear-gradient(to right, rgba(0, 243, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 243, 255, 0.03) 1px, transparent 1px);
+            background-size: 32px 32px;
+        }
+
+        /* Glassmorphism Cyber Panel */
+        .cyber-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7), inset 0 0 15px rgba(0, 243, 255, 0.03);
+            position: relative;
+        }
+
+        .cyber-panel-glow {
+            border-color: rgba(0, 243, 255, 0.5);
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.2), inset 0 0 15px rgba(0, 243, 255, 0.05);
+        }
+
+        /* HUD Frame Corner Marks */
+        .hud-corner {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-color: #00f3ff;
+            pointer-events: none;
+        }
+        .hud-tl { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
+        .hud-tr { top: -1px; right: -1px; border-top: 2px solid; border-right: 2px solid; }
+        .hud-bl { bottom: -1px; left: -1px; border-bottom: 2px solid; border-left: 2px solid; }
+        .hud-br { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
+
+        /* Neon Glow Texts & Shadows */
+        .glow-cyan { text-shadow: 0 0 10px rgba(0, 243, 255, 0.7); }
+        .glow-gold { text-shadow: 0 0 10px rgba(255, 183, 3, 0.8); }
+        .glow-red { text-shadow: 0 0 10px rgba(255, 0, 85, 0.8); }
+
+        /* Ticker Marquee Animation */
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 28s linear infinite;
+        }
+        .animate-marquee:hover { animation-play-state: paused; }
+
+        /* Custom Cyber Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #06080e; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border: 1px solid #00f3ff; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00f3ff; }
+
+        /* Certificate Print Styling */
+        @media print {
+            body * { visibility: hidden; }
+            #printableCertificateArea, #printableCertificateArea * { visibility: visible; }
+            #printableCertificateArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+                background: #0b0f19 !important;
+                color: #ffffff !important;
+            }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="cyber-grid-bg min-h-screen flex flex-col justify-between selection:bg-cyan-500 selection:text-black">
+
+    <!-- GLOBAL NOTIFICATION BANNER (Replaces alert) -->
+    <div id="toastNotification" class="fixed top-5 right-5 z-50 transform translate-x-full transition-transform duration-300 max-w-md w-full">
+        <div id="toastContent" class="cyber-panel rounded-lg p-4 flex items-center space-x-3 border-cyan-500 shadow-2xl">
+            <i id="toastIcon" class="fa-solid fa-circle-info text-cyan-400 text-xl"></i>
+            <div>
+                <h4 id="toastTitle" class="font-mono font-bold text-xs text-cyan-300 uppercase">SYSTEM MESSAGE</h4>
+                <p id="toastBody" class="text-xs text-slate-300 mt-0.5 font-mono"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN NAVBAR -->
+    <header class="border-b border-cyan-500/30 bg-slate-950/90 sticky top-0 z-40 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-4">
+            
+            <!-- Brand / Logo -->
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded bg-cyan-950/80 border border-cyan-400/60 flex items-center justify-center text-cyan-400 font-mono font-bold text-xl shadow-[0_0_15px_rgba(0,243,255,0.4)]">
+                    KL
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                        <h1 class="font-mono font-bold text-sm sm:text-base tracking-wider text-cyan-400 glow-cyan">
+                            KL UNIVERSITY CYBERSECURITY CLUB
+                        </h1>
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-mono">CYBERPULSE DAILY // THREAT INTEL & CERTIFICATION</p>
+                </div>
+            </div>
+
+            <!-- User Session Bar & Controls -->
+            <div class="flex items-center space-x-3 font-mono text-xs">
+                
+                <!-- Current Active User Badge -->
+                <div id="currentUserBadge" class="hidden items-center space-x-2 bg-slate-900/90 border border-slate-700 px-3 py-1.5 rounded">
+                    <i class="fa-solid fa-user-shield text-cyan-400"></i>
+                    <div>
+                        <span id="navUserName" class="text-cyan-300 font-bold block leading-none">Guest</span>
+                        <span id="navUserId" class="text-[10px] text-slate-400 block mt-0.5">ID: N/A</span>
+                    </div>
+                </div>
+
+                <!-- Admin Console Toggle Button -->
+                <button onclick="openAdminAuthModal()" class="px-3 py-1.5 bg-amber-950/60 hover:bg-amber-900/80 border border-amber-500/50 text-amber-300 rounded font-bold transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-user-lock"></i>
+                    <span>ADMIN CONSOLE</span>
+                </button>
+
+                <!-- Switch/Logout Account Button -->
+                <button id="logoutBtn" onclick="logoutUser()" class="hidden px-3 py-1.5 bg-red-950/60 hover:bg-red-900/80 border border-red-500/50 text-red-300 rounded transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span>LOGOUT</span>
+                </button>
+            </div>
+
+        </div>
+    </header>
+
+    <!-- NEWS TICKER MARQUEE -->
+    <div class="bg-slate-950 border-b border-cyan-500/20 text-cyan-300 py-1.5 px-4 font-mono text-xs flex items-center overflow-hidden">
+        <div class="flex-shrink-0 bg-cyan-500 text-black px-2 py-0.5 rounded font-bold text-[10px] tracking-wider mr-3 uppercase">
+            LIVE FEED
+        </div>
+        <div class="overflow-hidden w-full relative">
+            <div class="animate-marquee space-x-10 text-[11px]">
+                <span><i class="fa-solid fa-shield-cat text-red-400 mr-1.5"></i> OUTLOOK ZERO-DAY (CVE-2026-124194): NTLMv2 Hash Exposure Active in Wild</span>
+                <span><i class="fa-solid fa-snowflake text-amber-400 mr-1.5"></i> OT SCADA MELTDOWN: Internet-Exposed Fridges Cause EU Supermarket Food Spoilage</span>
+                <span><i class="fa-solid fa-robot text-purple-400 mr-1.5"></i> LLMJACKING SPRINT: Rogue Bots Hijacking Enterprise Cloud & OpenAI API Quotas</span>
+                <span><i class="fa-solid fa-triangle-exclamation text-emerald-400 mr-1.5"></i> CISA KEV UPDATE: 6 Flaws Added Including Cisco BroadWorks XXE RCE</span>
+                <!-- Duplicate for marquee loop -->
+                <span><i class="fa-solid fa-shield-cat text-red-400 mr-1.5"></i> OUTLOOK ZERO-DAY (CVE-2026-124194): NTLMv2 Hash Exposure Active in Wild</span>
+                <span><i class="fa-solid fa-snowflake text-amber-400 mr-1.5"></i> OT SCADA MELTDOWN: Internet-Exposed Fridges Cause EU Supermarket Food Spoilage</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN BODY CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 py-6 space-y-8 flex-grow w-full">
+
+        <!-- ==========================================================================
+             SECTION 1: STUDENT DASHBOARD & DISPATCH BOARD
+             ========================================================================== -->
+        <section id="studentDashboard" class="space-y-8">
+            
+            <!-- WELCOME BANNER -->
+            <div class="cyber-panel rounded-xl p-6 relative overflow-hidden">
+                <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+                <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                    <div class="space-y-2">
+                        <div class="inline-flex items-center space-x-2 px-2.5 py-1 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-400 font-mono text-xs">
+                            <i class="fa-solid fa-microchip"></i>
+                            <span>KL UNIVERSITY CYBER CLUB // INSTRUCTIONAL PORTAL</span>
+                        </div>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold font-mono text-slate-100 tracking-tight">
+                            WELCOME OPERATOR, <span id="welcomeUserName" class="text-cyan-400 glow-cyan">STUDENT</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                            Study today’s verified zero-day threat intelligence briefs, complete the 4-question readiness assessment, and earn your official verified <span class="text-amber-400 font-semibold">KL University Cyber Specialist Certificate</span>.
+                        </p>
+                    </div>
+
+                    <!-- Readiness Summary Box -->
+                    <div class="bg-slate-900/90 p-4 rounded-lg border border-slate-800 font-mono text-xs space-y-2 min-w-[240px]">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">STUDENT ID:</span>
+                            <span id="welcomeUserId" class="text-cyan-400 font-bold">N/A</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">CERT STATUS:</span>
+                            <span id="welcomeCertStatus" class="text-amber-400 font-bold">NOT ISSUED</span>
+                        </div>
+                        <div class="flex justify-between border-t border-slate-800 pt-2">
+                            <span class="text-slate-400">READINESS PASS:</span>
+                            <span class="text-emerald-400 font-bold">75% REQUIRED</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- THREAT DISPATCH GRID HEADER -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-lg font-bold font-mono text-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-radar text-cyan-400"></i>
+                        TODAY'S 4 CRITICAL THREAT INTEL DISPATCHES
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">
+                        Click "Inspect Payload" on any card to examine detailed attack schematics and defensive mitigations.
+                    </p>
+                </div>
+                <span class="text-xs font-mono text-cyan-400 bg-cyan-950 px-3 py-1 rounded border border-cyan-500/30">
+                    VERIFIED INTEL FEED
+                </span>
+            </div>
+
+            <!-- THREAT CARDS GRID -->
+            <div id="threatGrid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Javascript will inject 4 Cards -->
+            </div>
+
+            <!-- ==========================================================================
+                 SECTION 2: QUIZ ASSESSMENT & ATTEMPT LOCK STATION
+                 ========================================================================== -->
+            <div class="pt-6">
+                
+                <!-- QUIZ UNLOCKED CONTAINER -->
+                <div id="quizUnlockedContainer" class="cyber-panel rounded-xl p-6">
+                    <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800 mb-6">
+                        <div>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-500/40 uppercase font-bold">
+                                STAGE 2 // ASSESSMENT
+                            </span>
+                            <h3 class="text-xl font-bold font-mono text-slate-100 mt-1 flex items-center gap-2">
+                                <i class="fa-solid fa-graduation-cap text-amber-400"></i>
+                                CYBER READINESS & CERTIFICATION QUIZ
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-1">
+                                Answer all 4 questions based on today's intel dispatches. Score 75%+ to lock your score and unlock your printable certificate.
+                            </p>
+                        </div>
+                        <div class="font-mono text-xs text-right">
+                            <span class="text-slate-400 block">PASSING CRITERIA</span>
+                            <span class="text-cyan-400 font-bold text-sm">3 / 4 CORRECT (75%)</span>
+                        </div>
+                    </div>
+
+                    <!-- Quiz Form -->
+                    <form id="quizForm" onsubmit="handleQuizSubmit(event)" class="space-y-6">
+                        <div id="quizQuestionsContainer" class="space-y-6 font-mono text-xs">
+                            <!-- Dynamic rendering of 4 questions -->
+                        </div>
+
+                        <!-- Quiz Submit Bar -->
+                        <div class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div id="quizFeedbackMessage" class="text-xs font-mono font-bold text-amber-400"></div>
+                            <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-cyan-500 to-emerald-500 hover:from-cyan-400 hover:to-emerald-400 text-black font-mono font-bold text-xs rounded shadow-[0_0_20px_rgba(0,243,255,0.4)] transition uppercase tracking-wider flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>SUBMIT ASSESSMENT & GENERATE CERTIFICATE</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- QUIZ LOCKED BANNER (Shown if already completed) -->
+                <div id="quizLockedContainer" class="hidden cyber-panel rounded-xl p-6 border-emerald-500/50 bg-emerald-950/20">
+                    <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+                    <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+                    <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div class="space-y-1">
+                            <div class="inline-flex items-center space-x-2 text-emerald-400 font-mono font-bold text-xs bg-emerald-950 px-3 py-1 rounded border border-emerald-500/40">
+                                <i class="fa-solid fa-lock"></i>
+                                <span>ATTEMPT LOCKED: CERTIFICATE ALREADY ISSUED</span>
+                            </div>
+                            <h3 class="text-lg font-bold font-mono text-slate-100 mt-2">
+                                RE-ATTEMPT RESTRICTED FOR KLU ID: <span id="lockedKluIdText" class="text-cyan-400">2300030001</span>
+                            </h3>
+                            <p class="text-xs text-slate-300">
+                                You have already completed your daily cybersecurity readiness evaluation for today. Re-attempts are disabled to maintain certificate integrity. Scroll down to inspect or print your official credential below.
+                            </p>
+                        </div>
+                        <div class="bg-slate-900/90 p-4 rounded-lg border border-slate-800 font-mono text-xs space-y-1 min-w-[200px]">
+                            <div class="text-slate-400">RECORDED SCORE: <span id="lockedScoreText" class="text-emerald-400 font-bold">100%</span></div>
+                            <div class="text-slate-400">VERIFICATION ID: <span id="lockedCertIdText" class="text-cyan-400 font-bold">KLU-CYBER-2026-X9A2</span></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ==========================================================================
+                 SECTION 3: OFFICIAL INTERACTIVE CERTIFICATE DISPLAY
+                 ========================================================================== -->
+            <div id="certificateSection" class="hidden pt-6 space-y-6">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-xl font-bold font-mono text-slate-100 flex items-center gap-2">
+                            <i class="fa-solid fa-award text-amber-400"></i>
+                            OFFICIAL VERIFIED CERTIFICATE OF ACHIEVEMENT
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-0.5">
+                            Digitally signed and cryptographic hash verified by KL University Cybersecurity Club.
+                        </p>
+                    </div>
+
+                    <!-- Certificate Actions -->
+                    <div class="flex items-center space-x-3 font-mono text-xs">
+                        <button onclick="downloadCertificatePNG()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-bold rounded transition flex items-center space-x-2 shadow-[0_0_15px_rgba(255,183,3,0.4)]">
+                            <i class="fa-solid fa-download"></i>
+                            <span>DOWNLOAD CERTIFICATE (PNG)</span>
+                        </button>
+                        <button onclick="printCertificate()" class="px-4 py-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/50 rounded font-bold transition flex items-center space-x-2">
+                            <i class="fa-solid fa-print"></i>
+                            <span>PRINT / SAVE AS PDF</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CERTIFICATE CARD CONTAINER (Printable Area) -->
+                <div id="printableCertificateArea" class="cyber-panel rounded-2xl p-8 sm:p-12 relative overflow-hidden border-2 border-amber-500/40 bg-slate-950 shadow-[0_0_50px_rgba(255,183,3,0.15)]">
+                    
+                    <!-- Decorative Certificate Borders -->
+                    <div class="absolute inset-3 border border-amber-500/20 rounded-xl pointer-events-none"></div>
+                    <div class="absolute inset-5 border border-cyan-500/20 rounded-lg pointer-events-none"></div>
+
+                    <div class="relative z-10 flex flex-col justify-between min-h-[500px] text-center space-y-8">
+                        
+                        <!-- Header -->
+                        <div class="space-y-3">
+                            <div class="flex justify-center items-center space-x-3">
+                                <div class="w-12 h-12 rounded bg-slate-900 border border-amber-400 flex items-center justify-center text-amber-400 font-mono font-bold text-2xl">
+                                    KL
+                                </div>
+                            </div>
+                            <h4 class="font-mono font-extrabold text-amber-400 text-sm tracking-widest uppercase">
+                                KL UNIVERSITY // DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING
+                            </h4>
+                            <h2 class="text-2xl sm:text-4xl font-extrabold font-mono text-slate-100 tracking-tight glow-cyan">
+                                CERTIFICATE OF CYBER READINESS
+                            </h2>
+                            <p class="text-xs font-mono text-slate-400 tracking-wider uppercase">
+                                CYBERPULSE DAILY THREAT INTEL ASSESSMENT // ISSUE YEAR 2026
+                            </p>
+                        </div>
+
+                        <!-- Body / Recipient Info -->
+                        <div class="space-y-4 py-4">
+                            <p class="text-xs font-mono text-slate-400 uppercase tracking-widest">
+                                THIS CERTIFIES THAT OPERATOR
+                            </p>
+                            <div id="certStudentName" class="text-3xl sm:text-5xl font-black font-mono text-cyan-400 glow-cyan tracking-wide uppercase">
+                                STUDENT FULL NAME
+                            </div>
+                            <div class="inline-block px-4 py-1.5 rounded-full bg-slate-900 border border-slate-700 text-slate-300 font-mono text-xs">
+                                KLU REGISTRATION ID: <span id="certStudentId" class="text-amber-400 font-bold">2300030001</span>
+                            </div>
+                            <p class="text-xs text-slate-300 max-w-2xl mx-auto font-mono leading-relaxed pt-2">
+                                Has successfully analyzed today's zero-day threat dispatches (CVE-2026-124194, OT SCADA Vulnerabilities, LLMjacking Vectors, and CISA KEV Exploits) and demonstrated full mastery on the evaluation.
+                            </p>
+                        </div>
+
+                        <!-- Certificate Metadata Footer -->
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 items-end pt-6 border-t border-slate-800/80 font-mono text-xs">
+                            
+                            <!-- Left: Date & Score -->
+                            <div class="text-left space-y-1">
+                                <div class="text-[10px] text-slate-500 uppercase">ISSUE TIMESTAMP</div>
+                                <div id="certIssueDate" class="text-slate-200 font-bold">NOV 11, 2026</div>
+                                <div class="text-[10px] text-slate-500 uppercase pt-2">EVALUATION SCORE</div>
+                                <div id="certScoreDisplay" class="text-emerald-400 font-bold">100% PERFECT PASS</div>
+                            </div>
+
+                            <!-- Center: Hologram Stamp -->
+                            <div class="flex flex-col items-center justify-center">
+                                <div class="w-20 h-20 rounded-full border-2 border-dashed border-amber-400/80 bg-amber-950/40 flex flex-col items-center justify-center text-amber-400 shadow-[0_0_20px_rgba(255,183,3,0.3)] animate-pulse">
+                                    <i class="fa-solid fa-shield-halved text-2xl mb-1"></i>
+                                    <span class="text-[8px] font-bold tracking-tighter uppercase">VERIFIED KLU</span>
+                                </div>
+                            </div>
+
+                            <!-- Right: Verification Hash & Signature -->
+                            <div class="text-right space-y-1">
+                                <div class="text-[10px] text-slate-500 uppercase">VERIFICATION HASH ID</div>
+                                <div id="certVerificationHash" class="text-cyan-400 font-bold tracking-wider">KLU-CYBER-2026-X9A2</div>
+                                <div class="text-[10px] text-slate-500 uppercase pt-2">AUTHORIZED SIGNATURE</div>
+                                <div class="text-slate-300 font-bold italic">KLU Cyber Club Faculty Lead</div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ==========================================================================
+             SECTION 4: PRIVATE ADMIN DASHBOARD (PROTECTED)
+             ========================================================================== -->
+        <section id="adminDashboard" class="hidden space-y-8">
+            
+            <!-- ADMIN HEADER BAR -->
+            <div class="cyber-panel rounded-xl p-6 relative">
+                <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+                <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <span class="px-2.5 py-1 rounded bg-red-950 text-red-400 border border-red-500/40 text-xs font-mono font-bold uppercase">
+                            RESTRICTED ACCESS // LEVEL 5 CLEARANCE
+                        </span>
+                        <h2 class="text-2xl font-bold font-mono text-slate-100 mt-2 flex items-center gap-2">
+                            <i class="fa-solid fa-user-gear text-amber-400"></i>
+                            KLU CYBER CLUB ADMIN CONTROL CENTER
+                        </h2>
+                        <p class="text-xs text-slate-400 mt-1">
+                            Real-time audit telemetry of student logins, completion statuses, attempt locks, and certificate issuances.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center space-x-3 font-mono text-xs">
+                        <button onclick="exportAuditLogJSON()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-slate-700 rounded transition flex items-center space-x-2">
+                            <i class="fa-solid fa-download"></i>
+                            <span>EXPORT AUDIT LOG (JSON)</span>
+                        </button>
+                        <button onclick="switchView('student')" class="px-3.5 py-2 bg-cyan-950 hover:bg-cyan-900 text-cyan-300 border border-cyan-500/40 rounded transition">
+                            &larr; Return to Portal
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALYTICS KPI CARDS -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                
+                <div class="cyber-panel rounded-xl p-5 font-mono">
+                    <div class="flex justify-between items-start text-slate-400 text-xs mb-2">
+                        <span>TOTAL LOGGED-IN OPERATORS</span>
+                        <i class="fa-solid fa-users text-cyan-400 text-base"></i>
+                    </div>
+                    <div id="kpiTotalUsers" class="text-3xl font-extrabold text-cyan-400 glow-cyan">0</div>
+                    <div class="text-[10px] text-slate-500 mt-1">Unique KLU Students Tracked</div>
+                </div>
+
+                <div class="cyber-panel rounded-xl p-5 font-mono">
+                    <div class="flex justify-between items-start text-slate-400 text-xs mb-2">
+                        <span>CERTIFIED STUDENTS</span>
+                        <i class="fa-solid fa-award text-amber-400 text-base"></i>
+                    </div>
+                    <div id="kpiCertifiedUsers" class="text-3xl font-extrabold text-amber-400 glow-gold">0</div>
+                    <div class="text-[10px] text-slate-500 mt-1">Certificates Issued Today</div>
+                </div>
+
+                <div class="cyber-panel rounded-xl p-5 font-mono">
+                    <div class="flex justify-between items-start text-slate-400 text-xs mb-2">
+                        <span>AVERAGE QUIZ PASS RATE</span>
+                        <i class="fa-solid fa-chart-line text-emerald-400 text-base"></i>
+                    </div>
+                    <div id="kpiPassRate" class="text-3xl font-extrabold text-emerald-400">0%</div>
+                    <div class="text-[10px] text-slate-500 mt-1">Score Threshold &ge; 75%</div>
+                </div>
+
+            </div>
+
+            <!-- STUDENT AUDIT TELEMETRY TABLE -->
+            <div class="cyber-panel rounded-xl p-6">
+                <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+                <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800 mb-4 font-mono">
+                    <h3 class="font-bold text-slate-100 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-table text-cyan-400"></i>
+                        STUDENT ACTIVITY & ATTEMPT LOCK AUDIT TRAIL
+                    </h3>
+
+                    <!-- Search Filter -->
+                    <div class="relative min-w-[240px]">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+                        <input type="text" id="adminSearchInput" onkeyup="filterAdminTable()" placeholder="Search Name or KLU ID..." class="w-full bg-slate-900 border border-slate-700 rounded pl-8 pr-3 py-1.5 text-xs text-cyan-300 outline-none focus:border-cyan-400">
+                    </div>
+                </div>
+
+                <!-- Table Container -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left font-mono text-xs">
+                        <thead>
+                            <tr class="border-b border-slate-800 text-slate-400 uppercase text-[10px]">
+                                <th class="py-3 px-3">Student Name</th>
+                                <th class="py-3 px-3">KLU Reg ID</th>
+                                <th class="py-3 px-3">Login Timestamp</th>
+                                <th class="py-3 px-3">Quiz Score</th>
+                                <th class="py-3 px-3">Cert Status</th>
+                                <th class="py-3 px-3">Verification ID</th>
+                                <th class="py-3 px-3 text-right">Admin Override</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody" class="divide-y divide-slate-800/60 text-slate-300">
+                            <!-- JS Dynamic Rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-4 px-4 text-center text-xs font-mono text-slate-500">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div>
+                KL UNIVERSITY CYBERSECURITY CLUB &copy; 2026 // ALL RIGHTS RESERVED
+            </div>
+            <div class="flex items-center space-x-4 text-slate-400">
+                <span><i class="fa-solid fa-shield text-cyan-400 mr-1"></i> STATUS: SECURE</span>
+                <span><i class="fa-solid fa-network-wired text-emerald-400 mr-1"></i> NODE: KLU-CAMPUS-1</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==========================================================================
+         MODAL 1: LOGIN & AUTHENTICATION MODAL
+         ========================================================================== -->
+    <div id="loginModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="cyber-panel max-w-md w-full rounded-2xl p-6 relative shadow-2xl border-cyan-500/50">
+            <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+            <div class="text-center space-y-2 pb-5 border-b border-slate-800">
+                <div class="w-14 h-14 rounded-full bg-cyan-950 border border-cyan-400 mx-auto flex items-center justify-center text-cyan-400 font-mono font-bold text-2xl shadow-[0_0_20px_rgba(0,243,255,0.4)]">
+                    KLU
+                </div>
+                <h3 class="text-xl font-extrabold font-mono text-slate-100 tracking-wide">
+                    AUTHENTICATION PORTAL
+                </h3>
+                <p class="text-xs font-mono text-slate-400">
+                    KL University Cybersecurity Club Access
+                </p>
+            </div>
+
+            <!-- Login Form -->
+            <form onsubmit="handleLoginSubmit(event)" class="py-5 space-y-4 font-mono text-xs">
+                
+                <!-- Full Name Input -->
+                <div class="space-y-1">
+                    <label class="text-slate-300 font-bold block">FULL NAME</label>
+                    <input type="text" id="loginName" required placeholder="e.g. Alex Mercer" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-cyan-300 outline-none focus:border-cyan-400">
+                </div>
+
+                <!-- KLU Student ID Input -->
+                <div class="space-y-1">
+                    <label class="text-slate-300 font-bold block">KLU STUDENT REGISTRATION ID</label>
+                    <input type="text" id="loginId" required placeholder="e.g. 2300030001" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-cyan-300 outline-none focus:border-cyan-400">
+                    <span class="text-[10px] text-slate-500 block">Enter valid KL University Registration Number</span>
+                </div>
+
+                <!-- Role Selection -->
+                <div class="space-y-1">
+                    <label class="text-slate-300 font-bold block">ACCESS ROLE</label>
+                    <select id="loginRole" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-cyan-300 outline-none focus:border-cyan-400">
+                        <option value="student">Student / Cyber Operator</option>
+                        <option value="admin">Admin Console Access</option>
+                    </select>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-3 mt-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-mono font-bold text-xs rounded transition uppercase tracking-wider shadow-[0_0_20px_rgba(0,243,255,0.3)]">
+                    ENTER COMMAND PORTAL &rarr;
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL 2: DETAILED THREAT PAYLOAD INSPECTOR MODAL
+         ========================================================================== -->
+    <div id="intelModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="cyber-panel max-w-2xl w-full rounded-xl p-6 relative max-h-[90vh] flex flex-col justify-between overflow-hidden">
+            <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+            <div class="flex items-start justify-between pb-4 border-b border-slate-800">
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <span id="modalSeverity" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-red-950 text-red-400 border border-red-500/50">CRITICAL</span>
+                        <span id="modalCve" class="text-xs font-mono text-cyan-400">CVE-2026-124194</span>
+                    </div>
+                    <h3 id="modalTitle" class="text-xl font-bold font-mono text-slate-100 mt-1">OUTLOOK HASH HARVEST</h3>
+                </div>
+                <button onclick="closeIntelModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="py-4 overflow-y-auto space-y-4 font-mono text-xs text-slate-300 pr-1">
+                <div>
+                    <h4 class="text-cyan-400 font-bold mb-1 uppercase">TACTICAL ANALYSIS SUMMARY</h4>
+                    <p id="modalSummary" class="bg-slate-900/80 p-3 rounded border border-slate-800 leading-relaxed"></p>
+                </div>
+
+                <div>
+                    <h4 class="text-cyan-400 font-bold mb-1 uppercase">EXPLOIT EXECUTION SCHEMATIC</h4>
+                    <div id="modalSchematic" class="bg-black/90 p-3 rounded border border-slate-800 text-cyan-300 whitespace-pre-wrap font-mono text-[11px] leading-relaxed"></div>
+                </div>
+
+                <div>
+                    <h4 class="text-cyan-400 font-bold mb-1 uppercase">VERIFIED MITIGATION STEPS</h4>
+                    <ul id="modalMitigations" class="list-disc list-inside bg-slate-900/80 p-3 rounded border border-slate-800 space-y-1"></ul>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800 flex justify-end">
+                <button onclick="closeIntelModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs rounded transition">
+                    CLOSE INSPECTOR
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL 3: ADMIN AUTHENTICATION PASSKEY MODAL
+         ========================================================================== -->
+    <div id="adminPasskeyModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="cyber-panel max-w-sm w-full rounded-xl p-6 relative font-mono text-xs">
+            <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+            <h3 class="text-base font-bold text-amber-400 flex items-center gap-2 mb-2">
+                <i class="fa-solid fa-key"></i> ADMIN CLEARANCE REQUIRED
+            </h3>
+            <p class="text-slate-400 mb-4">Enter master security passkey to access the Admin Control Dashboard.</p>
+
+            <form onsubmit="verifyAdminPasskey(event)" class="space-y-4">
+                <input type="password" id="adminPasskeyInput" placeholder="Enter Admin Passkey..." required class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-amber-300 outline-none focus:border-amber-400">
+                <div class="flex justify-end space-x-2">
+                    <button type="button" onclick="closeAdminAuthModal()" class="px-3 py-1.5 bg-slate-800 text-slate-400 rounded">Cancel</button>
+                    <button type="submit" class="px-4 py-1.5 bg-amber-500 text-black font-bold rounded">VERIFY</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         MODAL 4: ADMIN CONFIRM OVERRIDE MODAL (Replaces confirm())
+         ========================================================================== -->
+    <div id="adminResetConfirmModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden flex items-center justify-center p-4">
+        <div class="cyber-panel max-w-sm w-full rounded-xl p-6 relative font-mono text-xs space-y-4">
+            <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+            <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+            <h3 class="text-base font-bold text-red-400 flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation"></i> CONFIRM ATTEMPT RESET
+            </h3>
+            <p class="text-slate-300">
+                Are you sure you want to reset completion & attempt lock for KLU Student <span id="resetModalTargetId" class="text-cyan-400 font-bold"></span>? They will be allowed to retake the quiz.
+            </p>
+            <div class="flex justify-end space-x-2 pt-2">
+                <button onclick="closeResetModal()" class="px-3 py-1.5 bg-slate-800 text-slate-400 rounded">Cancel</button>
+                <button id="confirmResetBtn" class="px-4 py-1.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded">CONFIRM RESET</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==========================================================================
+         APPLICATION JAVASCRIPT LOGIC
+         ========================================================================== -->
+    <script>
+        /* --------------------------------------------------------------------------
+           1. DATA STRUCTURES & DAILY NEWS BRIEFS
+           -------------------------------------------------------------------------- */
+
+        const newsDispatches = [
+            {
+                id: 1,
+                title: "Outlook Hash Harvest Zero-Day",
+                cve: "CVE-2026-124194",
+                severity: "CRITICAL",
+                badgeClass: "bg-red-950 text-red-400 border-red-500/50",
+                icon: "fa-envelope-open-text text-red-400",
+                summary: "Microsoft Patch Tuesday addresses an actively exploited zero-day in Outlook allowing unauthenticated attackers to force outbound TCP 445 SMB connections to rogue endpoints, leaking user NTLMv2 hashes.",
+                schematic: `[ATTACK FLOW]\nTarget Email Client -> HTML URI Preview Trigger -> Force SMB (TCP 445) Outbound -> Capture NTLMv2 Authentication Hash -> Offline Hash Cracking / Relay Attack`,
+                mitigations: [
+                    "Block outbound TCP Port 445 at edge perimeter firewalls.",
+                    "Apply Microsoft November Patch Tuesday updates across endpoints.",
+                    "Configure GPO to restrict outgoing NTLM traffic to external servers."
+                ]
+            },
+            {
+                id: 2,
+                title: "Attack of the Killer Fridges (OT Meltdown)",
+                cve: "OT-SCADA-2026",
+                severity: "HIGH",
+                badgeClass: "bg-amber-950 text-amber-400 border-amber-500/50",
+                icon: "fa-snowflake text-amber-400",
+                summary: "Threat actors hijacked internet-exposed SCADA controllers across European supermarket refrigeration systems. Raising ambient temperatures destroyed fresh inventory across France and neighboring regions.",
+                schematic: `[SCADA BREACH FLOW]\nWAN Shodan Scan -> Unauthenticated Modbus/BACnet Port 502 -> Bypass Default Admin Credentials -> Remote Temperature Setpoint Injection (+25°C) -> Cold-Chain Inventory Destruction`,
+                mitigations: [
+                    "Isolate industrial refrigeration controllers on segregated OT VLANs.",
+                    "Disable direct WAN public port forwarding on industrial gateways.",
+                    "Rotate default factory credentials across all connected controllers."
+                ]
+            },
+            {
+                id: 3,
+                title: "Rogue AI Agents & LLMjacking",
+                cve: "AI-BOT-2026",
+                severity: "HIGH",
+                badgeClass: "bg-amber-950 text-amber-400 border-amber-500/50",
+                icon: "fa-robot text-purple-400",
+                summary: "Autonomous post-exploitation agentic frameworks (ARTEX & CyberStrikeAI) automate cloud token harvesting. Stolen OpenAI and AWS credentials are resold via malicious mixing networks to fund rogue neural training.",
+                schematic: `[LLMJACKING FLOW]\nAutomated Secret Scraping -> Extract AWS/OpenAI Cloud Keys -> Proxy Inferences through Anonymized Mixers -> Uncapped Compute Billing Hijack`,
+                mitigations: [
+                    "Enforce automated git secret scanning across all software repositories.",
+                    "Rotate all Cloud API keys and set strict billing budget alerts.",
+                    "Implement IP restriction policies on LLM Gateway endpoints."
+                ]
+            },
+            {
+                id: 4,
+                title: "Infrastructure Fire Drills (CISA KEV)",
+                cve: "CISA-KEV-2026",
+                severity: "CRITICAL",
+                badgeClass: "bg-red-950 text-red-400 border-red-500/50",
+                icon: "fa-fire-flame-curated text-red-400",
+                summary: "CISA added 6 critical zero-days to the KEV catalog, prominently featuring Cisco BroadWorks XML external entity (XXE) flaw (CVE-2026-20320), Barracuda ESG auth bypass, SonicWall VPN, and Chrome zero-days.",
+                schematic: `[MULTI-VENDOR EXPLOIT VECTORS]\n- Cisco BroadWorks: XXE Injection -> Remote Code Execution\n- SonicWall VPN: Auth Bypass -> Perimeter Ingress Tunneling\n- Chrome Browser: Use-After-Free -> Sandbox Escape`,
+                mitigations: [
+                    "Patch Cisco BroadWorks XML authentication modules immediately.",
+                    "Apply emergency hotfixes to SonicWall SonicOS SSL-VPN gateways.",
+                    "Update Google Chrome enterprise browsers to version 131+."
+                ]
+            }
+        ];
+
+        const quizQuestions = [
+            {
+                id: 1,
+                question: "1. Which network port should be blocked outbound at perimeter firewalls to prevent NTLMv2 hash leakage from the Outlook zero-day (CVE-2026-124194)?",
+                options: [
+                    "TCP 443 (HTTPS)",
+                    "TCP 445 (SMB)",
+                    "UDP 53 (DNS)",
+                    "TCP 22 (SSH)"
+                ],
+                correct: 1
+            },
+            {
+                id: 2,
+                question: "2. What vector enabled threat actors to hijack European cold-chain supermarket fridges and spoil food inventory?",
+                options: [
+                    "Phishing emails with malicious PDF invoices",
+                    "Unauthenticated access to exposed SCADA/Modbus refrigeration controllers on WAN",
+                    "Overclocking server room GPU fans",
+                    "SQL injection on customer loyalty web portals"
+                ],
+                correct: 1
+            },
+            {
+                id: 3,
+                question: "3. What is the primary operational objective of 'LLMjacking' attacks carried out by autonomous bots like ARTEX?",
+                options: [
+                    "Stealing cloud & OpenAI API keys to hijack enterprise compute for rogue model training",
+                    "Deleting git commit histories in developer environments",
+                    "Encrypting local hard drives for Bitcoin ransom",
+                    "Altering company logos to low-resolution images"
+                ],
+                correct: 0
+            },
+            {
+                id: 4,
+                question: "4. Which flaw added to CISA's KEV catalog enables Remote Code Execution in Cisco BroadWorks via XML External Entity (XXE) injection?",
+                options: [
+                    "CVE-2026-20320",
+                    "CVE-2024-0001",
+                    "CVE-2026-9999",
+                    "CVE-2025-1111"
+                ],
+                correct: 0
+            }
+        ];
+
+        /* --------------------------------------------------------------------------
+           2. APP STATE & LOCALSTORAGE PERSISTENCE
+           -------------------------------------------------------------------------- */
+
+        const STORAGE_KEY_CURRENT = 'cyberpulse_current_user';
+        const STORAGE_KEY_LOGS = 'cyberpulse_logs';
+        const STORAGE_KEY_COMPLETIONS = 'cyberpulse_completions';
+        const ADMIN_PASSKEY = 'admin2026';
+
+        let currentUser = null; // { name, kluId, role, timestamp }
+
+        function getStoredLogs() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY_LOGS) || '[]');
+        }
+
+        function saveLogEntry(entry) {
+            const logs = getStoredLogs();
+            logs.unshift(entry);
+            localStorage.setItem(STORAGE_KEY_LOGS, JSON.stringify(logs));
+        }
+
+        function getStoredCompletions() {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY_COMPLETIONS) || '{}');
+        }
+
+        function saveCompletionRecord(kluId, data) {
+            const completions = getStoredCompletions();
+            completions[kluId] = data; // { name, score, certId, timestamp }
+            localStorage.setItem(STORAGE_KEY_COMPLETIONS, JSON.stringify(completions));
+        }
+
+        function removeCompletionRecord(kluId) {
+            const completions = getStoredCompletions();
+            delete completions[kluId];
+            localStorage.setItem(STORAGE_KEY_COMPLETIONS, JSON.stringify(completions));
+        }
+
+        /* --------------------------------------------------------------------------
+           3. UI NOTIFICATION TOAST & UTILITIES
+           -------------------------------------------------------------------------- */
+
+        function showToast(title, body, type = 'info') {
+            const toast = document.getElementById('toastNotification');
+            const icon = document.getElementById('toastIcon');
+            const tTitle = document.getElementById('toastTitle');
+            const tBody = document.getElementById('toastBody');
+
+            tTitle.innerText = title;
+            tBody.innerText = body;
+
+            if (type === 'error') {
+                icon.className = 'fa-solid fa-triangle-exclamation text-red-400 text-xl';
+                tTitle.className = 'font-mono font-bold text-xs text-red-400 uppercase';
+            } else if (type === 'success') {
+                icon.className = 'fa-solid fa-circle-check text-emerald-400 text-xl';
+                tTitle.className = 'font-mono font-bold text-xs text-emerald-400 uppercase';
+            } else {
+                icon.className = 'fa-solid fa-circle-info text-cyan-400 text-xl';
+                tTitle.className = 'font-mono font-bold text-xs text-cyan-300 uppercase';
+            }
+
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 4000);
+        }
+
+        function generateUniqueHash(kluId) {
+            const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
+            return `KLU-CYBER-2026-${kluId.slice(-4)}-${rand}`;
+        }
+
+        /* --------------------------------------------------------------------------
+           4. AUTHENTICATION & SESSION MANAGEMENT
+           -------------------------------------------------------------------------- */
+
+        function checkExistingSession() {
+            const stored = localStorage.getItem(STORAGE_KEY_CURRENT);
+            if (stored) {
+                currentUser = JSON.parse(stored);
+                applyUserSession();
+            } else {
+                document.getElementById('loginModal').classList.remove('hidden');
+            }
+        }
+
+        function handleLoginSubmit(event) {
+            event.preventDefault();
+            const name = document.getElementById('loginName').value.trim();
+            const kluId = document.getElementById('loginId').value.trim();
+            const role = document.getElementById('loginRole').value;
+
+            if (!name || !kluId) {
+                showToast("INVALID INPUT", "Please enter your Name and KLU Student ID.", "error");
+                return;
+            }
+
+            currentUser = {
+                name: name,
+                kluId: kluId,
+                role: role,
+                timestamp: new Date().toLocaleString()
+            };
+
+            localStorage.setItem(STORAGE_KEY_CURRENT, JSON.stringify(currentUser));
+
+            // Log attempt
+            saveLogEntry({
+                id: Date.now(),
+                name: currentUser.name,
+                kluId: currentUser.kluId,
+                role: currentUser.role,
+                timestamp: currentUser.timestamp,
+                type: 'LOGIN'
+            });
+
+            document.getElementById('loginModal').classList.add('hidden');
+            showToast("ACCESS GRANTED", `Welcome ${currentUser.name} [${currentUser.kluId}]`, "success");
+
+            if (role === 'admin') {
+                openAdminAuthModal();
+            } else {
+                applyUserSession();
+            }
+        }
+
+        function logoutUser() {
+            localStorage.removeItem(STORAGE_KEY_CURRENT);
+            currentUser = null;
+            location.reload();
+        }
+
+        function applyUserSession() {
+            if (!currentUser) return;
+
+            // Nav Elements
+            document.getElementById('currentUserBadge').classList.remove('hidden');
+            document.getElementById('currentUserBadge').classList.add('flex');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('navUserName').innerText = currentUser.name;
+            document.getElementById('navUserId').innerText = `ID: ${currentUser.kluId}`;
+
+            // Welcome Elements
+            document.getElementById('welcomeUserName').innerText = currentUser.name.toUpperCase();
+            document.getElementById('welcomeUserId').innerText = currentUser.kluId;
+
+            // Check if student has ALREADY completed quiz
+            const completions = getStoredCompletions();
+            const existingCert = completions[currentUser.kluId];
+
+            if (existingCert) {
+                // LOCK QUIZ & DISPLAY CERTIFICATE DIRECTLY
+                document.getElementById('welcomeCertStatus').innerText = "ISSUED & LOCKED";
+                document.getElementById('welcomeCertStatus').className = "text-emerald-400 font-bold";
+
+                document.getElementById('quizUnlockedContainer').classList.add('hidden');
+                document.getElementById('quizLockedContainer').classList.remove('hidden');
+
+                document.getElementById('lockedKluIdText').innerText = currentUser.kluId;
+                document.getElementById('lockedScoreText').innerText = `${existingCert.score}%`;
+                document.getElementById('lockedCertIdText').innerText = existingCert.certId;
+
+                renderCertificate(currentUser.name, currentUser.kluId, existingCert.score, existingCert.certId, existingCert.timestamp);
+            } else {
+                document.getElementById('welcomeCertStatus').innerText = "NOT ISSUED";
+                document.getElementById('quizUnlockedContainer').classList.remove('hidden');
+                document.getElementById('quizLockedContainer').classList.add('hidden');
+                document.getElementById('certificateSection').classList.add('hidden');
+            }
+
+            renderThreatGrid();
+            renderQuizQuestions();
+        }
+
+        /* --------------------------------------------------------------------------
+           5. THREAT DISPATCH & INSPECTOR MODAL
+           -------------------------------------------------------------------------- */
+
+        function renderThreatGrid() {
+            const grid = document.getElementById('threatGrid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            newsDispatches.forEach(dispatch => {
+                const card = `
+                    <div class="cyber-panel rounded-xl p-5 flex flex-col justify-between group hover:border-cyan-400/60 transition">
+                        <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+                        <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${dispatch.badgeClass}">
+                                    ${dispatch.severity}
+                                </span>
+                                <span class="text-xs font-mono text-cyan-400">${dispatch.cve}</span>
+                            </div>
+
+                            <h4 class="font-mono font-bold text-base text-slate-100 group-hover:text-cyan-300 transition flex items-center gap-2">
+                                <i class="fa-solid ${dispatch.icon}"></i>
+                                ${dispatch.title}
+                            </h4>
+
+                            <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                                ${dispatch.summary}
+                            </p>
+                        </div>
+
+                        <div class="mt-5 pt-3 border-t border-slate-800 flex justify-between items-center font-mono text-xs">
+                            <span class="text-[10px] text-slate-400">STATUS: VERIFIED INTEL</span>
+                            <button onclick="openIntelModal(${dispatch.id})" class="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-cyan-400 border border-slate-700 hover:border-cyan-400 rounded transition flex items-center space-x-1.5">
+                                <i class="fa-solid fa-code"></i>
+                                <span>INSPECT PAYLOAD</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        function openIntelModal(id) {
+            const dispatch = newsDispatches.find(d => d.id === id);
+            if (!dispatch) return;
+
+            document.getElementById('modalSeverity').innerText = dispatch.severity;
+            document.getElementById('modalSeverity').className = `px-2 py-0.5 rounded text-[10px] font-mono font-bold border ${dispatch.badgeClass}`;
+            document.getElementById('modalCve').innerText = dispatch.cve;
+            document.getElementById('modalTitle').innerText = dispatch.title;
+            document.getElementById('modalSummary').innerText = dispatch.summary;
+            document.getElementById('modalSchematic').innerText = dispatch.schematic;
+
+            const list = document.getElementById('modalMitigations');
+            list.innerHTML = '';
+            dispatch.mitigations.forEach(m => {
+                list.innerHTML += `<li>${m}</li>`;
+            });
+
+            document.getElementById('intelModal').classList.remove('hidden');
+        }
+
+        function closeIntelModal() {
+            document.getElementById('intelModal').classList.add('hidden');
+        }
+
+        /* --------------------------------------------------------------------------
+           6. QUIZ ASSESSMENT & RE-ATTEMPT LOCK SYSTEM
+           -------------------------------------------------------------------------- */
+
+        function renderQuizQuestions() {
+            const container = document.getElementById('quizQuestionsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            quizQuestions.forEach((q, qIndex) => {
+                const qHtml = `
+                    <div class="bg-slate-900/80 p-4 rounded-lg border border-slate-800 space-y-3">
+                        <div class="font-bold text-slate-200 text-xs sm:text-sm">${q.question}</div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-1">
+                            ${q.options.map((opt, optIndex) => `
+                                <label class="flex items-center space-x-2.5 p-2 rounded bg-slate-950/60 border border-slate-800 hover:border-cyan-500/40 cursor-pointer transition select-none">
+                                    <input type="radio" name="question_${q.id}" value="${optIndex}" required class="text-cyan-500 focus:ring-0 bg-slate-900 border-slate-700">
+                                    <span class="text-xs text-slate-300">${opt}</span>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += qHtml;
+            });
+        }
+
+        function handleQuizSubmit(event) {
+            event.preventDefault();
+            if (!currentUser) {
+                showToast("SESSION ERROR", "Please login first.", "error");
+                return;
+            }
+
+            // Check if already completed
+            const completions = getStoredCompletions();
+            if (completions[currentUser.kluId]) {
+                showToast("ATTEMPT LOCKED", "You have already completed this evaluation.", "error");
+                applyUserSession();
+                return;
+            }
+
+            let correctCount = 0;
+            quizQuestions.forEach(q => {
+                const selected = document.querySelector(`input[name="question_${q.id}"]:checked`);
+                if (selected && parseInt(selected.value) === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            const total = quizQuestions.length;
+            const percentage = Math.round((correctCount / total) * 100);
+
+            if (percentage >= 75) {
+                // PASS! Save completion and generate cert ID
+                const certId = generateUniqueHash(currentUser.kluId);
+                const timestamp = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
+                saveCompletionRecord(currentUser.kluId, {
+                    name: currentUser.name,
+                    score: percentage,
+                    certId: certId,
+                    timestamp: timestamp
+                });
+
+                saveLogEntry({
+                    id: Date.now(),
+                    name: currentUser.name,
+                    kluId: currentUser.kluId,
+                    role: currentUser.role,
+                    score: `${percentage}%`,
+                    certId: certId,
+                    timestamp: new Date().toLocaleString(),
+                    type: 'QUIZ_COMPLETED'
+                });
+
+                showToast("ASSESSMENT PASSED!", `Score: ${percentage}%. Official Certificate Issued!`, "success");
+
+                // Lock UI & Render Cert
+                applyUserSession();
+            } else {
+                showToast("ASSESSMENT FAILED", `Score: ${percentage}%. 75% required to pass. Review intel dispatches!`, "error");
+                document.getElementById('quizFeedbackMessage').innerText = `Score: ${percentage}% (${correctCount}/${total}). Minimum 75% required. Review intel & try again!`;
+            }
+        }
+
+        /* --------------------------------------------------------------------------
+           7. CERTIFICATE GENERATOR & PRINTING
+           -------------------------------------------------------------------------- */
+
+        function renderCertificate(name, kluId, score, certId, date) {
+            document.getElementById('certStudentName').innerText = name;
+            document.getElementById('certStudentId').innerText = kluId;
+            document.getElementById('certScoreDisplay').innerText = `${score}% PASSED`;
+            document.getElementById('certVerificationHash').innerText = certId;
+            document.getElementById('certIssueDate').innerText = date || 'NOV 11, 2026';
+
+            document.getElementById('certificateSection').classList.remove('hidden');
+        }
+
+        function printCertificate() {
+            window.print();
+        }
+
+        function downloadCertificatePNG() {
+            const name = document.getElementById('certStudentName').innerText || "STUDENT NAME";
+            const kluId = document.getElementById('certStudentId').innerText || "N/A";
+            const score = document.getElementById('certScoreDisplay').innerText || "100%";
+            const certId = document.getElementById('certVerificationHash').innerText || "KLU-CYBER-2026";
+            const date = document.getElementById('certIssueDate').innerText || "NOV 11, 2026";
+
+            // Create high-resolution offscreen canvas (1600x1000)
+            const canvas = document.createElement('canvas');
+            canvas.width = 1600;
+            canvas.height = 1000;
+            const ctx = canvas.getContext('2d');
+
+            // 1. Dark Cyber Background
+            ctx.fillStyle = '#0b0f19';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Subdued Background Grid Lines
+            ctx.strokeStyle = 'rgba(0, 243, 255, 0.05)';
+            ctx.lineWidth = 1;
+            for (let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+            }
+            for (let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+            }
+
+            // 3. Decorative Gold & Cyan Borders
+            ctx.strokeStyle = '#ffb703';
+            ctx.lineWidth = 6;
+            ctx.strokeRect(30, 30, canvas.width - 60, canvas.height - 60);
+
+            ctx.strokeStyle = '#00f3ff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(45, 45, canvas.width - 90, canvas.height - 90);
+
+            // 4. Corner HUD Accents
+            const cSize = 30;
+            ctx.strokeStyle = '#ffb703';
+            ctx.lineWidth = 4;
+            // TL
+            ctx.beginPath(); ctx.moveTo(20, 20 + cSize); ctx.lineTo(20, 20); ctx.lineTo(20 + cSize, 20); ctx.stroke();
+            // TR
+            ctx.beginPath(); ctx.moveTo(canvas.width - 20 - cSize, 20); ctx.lineTo(canvas.width - 20, 20); ctx.lineTo(canvas.width - 20, 20 + cSize); ctx.stroke();
+            // BL
+            ctx.beginPath(); ctx.moveTo(20, canvas.height - 20 - cSize); ctx.lineTo(20, canvas.height - 20); ctx.lineTo(20 + cSize, canvas.height - 20); ctx.stroke();
+            // BR
+            ctx.beginPath(); ctx.moveTo(canvas.width - 20 - cSize, canvas.height - 20); ctx.lineTo(canvas.width - 20, canvas.height - 20); ctx.lineTo(canvas.width - 20, canvas.height - 20 - cSize); ctx.stroke();
+
+            // 5. Header Logo Badge Box
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(canvas.width / 2 - 40, 70, 80, 80);
+            ctx.strokeStyle = '#ffb703';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(canvas.width / 2 - 40, 70, 80, 80);
+
+            ctx.fillStyle = '#ffb703';
+            ctx.font = 'bold 36px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('KL', canvas.width / 2, 122);
+
+            // 6. Title Texts
+            ctx.fillStyle = '#ffb703';
+            ctx.font = 'bold 16px "JetBrains Mono", monospace';
+            ctx.fillText('KL UNIVERSITY // DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING', canvas.width / 2, 190);
+
+            ctx.fillStyle = '#00f3ff';
+            ctx.font = 'bold 38px "JetBrains Mono", monospace';
+            ctx.fillText('CERTIFICATE OF CYBER READINESS', canvas.width / 2, 248);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '14px "JetBrains Mono", monospace';
+            ctx.fillText('CYBERPULSE DAILY THREAT INTEL ASSESSMENT // ISSUE YEAR 2026', canvas.width / 2, 282);
+
+            // Divider Line
+            ctx.strokeStyle = 'rgba(255, 183, 3, 0.3)';
+            ctx.beginPath(); ctx.moveTo(220, 312); ctx.lineTo(canvas.width - 220, 312); ctx.stroke();
+
+            // 7. Recipient Information
+            ctx.fillStyle = '#64748b';
+            ctx.font = 'bold 14px "JetBrains Mono", monospace';
+            ctx.fillText('THIS CERTIFIES THAT OPERATOR', canvas.width / 2, 360);
+
+            ctx.fillStyle = '#00f3ff';
+            ctx.font = 'extrabold 52px "JetBrains Mono", monospace';
+            ctx.fillText(name.toUpperCase(), canvas.width / 2, 435);
+
+            // Registration ID Box
+            const idText = `KLU REGISTRATION ID: ${kluId}`;
+            ctx.font = 'bold 16px "JetBrains Mono", monospace';
+            const textWidth = ctx.measureText(idText).width;
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(canvas.width / 2 - (textWidth / 2 + 20), 470, textWidth + 40, 38);
+            ctx.strokeStyle = '#334155';
+            ctx.strokeRect(canvas.width / 2 - (textWidth / 2 + 20), 470, textWidth + 40, 38);
+
+            ctx.fillStyle = '#ffb703';
+            ctx.fillText(idText, canvas.width / 2, 495);
+
+            // Description Paragraph
+            ctx.fillStyle = '#cbd5e1';
+            ctx.font = '15px "Inter", sans-serif';
+            ctx.fillText("Has successfully analyzed today's zero-day threat dispatches (CVE-2026-124194, OT SCADA Vulnerabilities,", canvas.width / 2, 560);
+            ctx.fillText("LLMjacking Vectors, and CISA KEV Exploits) and demonstrated full mastery on the evaluation.", canvas.width / 2, 585);
+
+            // Footer Line
+            ctx.strokeStyle = 'rgba(255, 183, 3, 0.3)';
+            ctx.beginPath(); ctx.moveTo(120, 650); ctx.lineTo(canvas.width - 120, 650); ctx.stroke();
+
+            // 8. Footer Left Column
+            ctx.textAlign = 'left';
+            ctx.fillStyle = '#64748b';
+            ctx.font = '12px "JetBrains Mono", monospace';
+            ctx.fillText('ISSUE TIMESTAMP', 120, 695);
+
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'bold 16px "JetBrains Mono", monospace';
+            ctx.fillText(date, 120, 720);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '12px "JetBrains Mono", monospace';
+            ctx.fillText('EVALUATION SCORE', 120, 770);
+
+            ctx.fillStyle = '#00ff88';
+            ctx.font = 'bold 18px "JetBrains Mono", monospace';
+            ctx.fillText(score, 120, 795);
+
+            // 9. Footer Right Column
+            ctx.textAlign = 'right';
+            ctx.fillStyle = '#64748b';
+            ctx.font = '12px "JetBrains Mono", monospace';
+            ctx.fillText('VERIFICATION HASH ID', canvas.width - 120, 695);
+
+            ctx.fillStyle = '#00f3ff';
+            ctx.font = 'bold 16px "JetBrains Mono", monospace';
+            ctx.fillText(certId, canvas.width - 120, 720);
+
+            ctx.fillStyle = '#64748b';
+            ctx.font = '12px "JetBrains Mono", monospace';
+            ctx.fillText('AUTHORIZED SIGNATURE', canvas.width - 120, 770);
+
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = 'italic bold 16px "Inter", sans-serif';
+            ctx.fillText('KLU Cyber Club Faculty Lead', canvas.width - 120, 795);
+
+            // 10. Center Official Seal Circle Stamp
+            const sealX = canvas.width / 2;
+            const sealY = 745;
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(sealX, sealY, 60, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 183, 3, 0.08)';
+            ctx.fill();
+            ctx.strokeStyle = '#ffb703';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([6, 4]);
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.textAlign = 'center';
+            ctx.fillStyle = '#ffb703';
+            ctx.font = 'bold 22px "JetBrains Mono", monospace';
+            ctx.fillText('★', sealX, sealY - 14);
+            ctx.font = 'bold 12px "JetBrains Mono", monospace';
+            ctx.fillText('VERIFIED KLU', sealX, sealY + 10);
+            ctx.fillText('SECURITY', sealX, sealY + 28);
+
+            // Trigger Instant Download
+            const link = document.createElement('a');
+            link.download = `KLU_Cybersecurity_Certificate_${kluId}.png`;
+            link.href = canvas.toDataURL('image/png');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            showToast("CERTIFICATE DOWNLOADED", "PNG image saved successfully!", "success");
+        }
+
+        /* --------------------------------------------------------------------------
+           8. ADMIN CONSOLE & OVERRIDE CONTROLS
+           -------------------------------------------------------------------------- */
+
+        function openAdminAuthModal() {
+            document.getElementById('adminPasskeyModal').classList.remove('hidden');
+        }
+
+        function closeAdminAuthModal() {
+            document.getElementById('adminPasskeyModal').classList.add('hidden');
+        }
+
+        function verifyAdminPasskey(event) {
+            event.preventDefault();
+            const key = document.getElementById('adminPasskeyInput').value;
+            if (key === ADMIN_PASSKEY) {
+                closeAdminAuthModal();
+                switchView('admin');
+                renderAdminDashboard();
+                showToast("ADMIN ACCESS GRANTED", "Loaded telemetry console.", "success");
+            } else {
+                showToast("ACCESS DENIED", "Incorrect Admin Passkey.", "error");
+            }
+        }
+
+        function switchView(view) {
+            if (view === 'admin') {
+                document.getElementById('studentDashboard').classList.add('hidden');
+                document.getElementById('adminDashboard').classList.remove('hidden');
+            } else {
+                document.getElementById('adminDashboard').classList.add('hidden');
+                document.getElementById('studentDashboard').classList.remove('hidden');
+            }
+        }
+
+        function renderAdminDashboard() {
+            const completions = getStoredCompletions();
+            const logs = getStoredLogs();
+
+            // Calculate KPIs
+            const uniqueStudents = new Set();
+            logs.forEach(l => uniqueStudents.add(l.kluId));
+            if (currentUser) uniqueStudents.add(currentUser.kluId);
+
+            const certifiedCount = Object.keys(completions).length;
+            const totalAttempts = Object.keys(completions).length; // or logs
+            let totalScores = 0;
+            Object.values(completions).forEach(c => totalScores += c.score);
+            const avgRate = certifiedCount > 0 ? Math.round(totalScores / certifiedCount) : 0;
+
+            document.getElementById('kpiTotalUsers').innerText = uniqueStudents.size;
+            document.getElementById('kpiCertifiedUsers').innerText = certifiedCount;
+            document.getElementById('kpiPassRate').innerText = `${avgRate}%`;
+
+            renderAdminTable();
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const logs = getStoredLogs();
+            const completions = getStoredCompletions();
+
+            // Map unique student states
+            const studentMap = {};
+
+            logs.forEach(l => {
+                if (!studentMap[l.kluId]) {
+                    studentMap[l.kluId] = {
+                        name: l.name,
+                        kluId: l.kluId,
+                        timestamp: l.timestamp,
+                        score: completions[l.kluId] ? `${completions[l.kluId].score}%` : 'N/A',
+                        certId: completions[l.kluId] ? completions[l.kluId].certId : 'NOT ISSUED',
+                        passed: !!completions[l.kluId]
+                    };
+                }
+            });
+
+            // Also check current active user
+            if (currentUser && !studentMap[currentUser.kluId]) {
+                studentMap[currentUser.kluId] = {
+                    name: currentUser.name,
+                    kluId: currentUser.kluId,
+                    timestamp: currentUser.timestamp,
+                    score: completions[currentUser.kluId] ? `${completions[currentUser.kluId].score}%` : 'N/A',
+                    certId: completions[currentUser.kluId] ? completions[currentUser.kluId].certId : 'NOT ISSUED',
+                    passed: !!completions[currentUser.kluId]
+                };
+            }
+
+            const studentList = Object.values(studentMap);
+
+            if (studentList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-slate-500">No student telemetry records available yet.</td></tr>`;
+                return;
+            }
+
+            studentList.forEach(st => {
+                const row = `
+                    <tr class="hover:bg-slate-900/60 transition">
+                        <td class="py-3 px-3 font-bold text-slate-200">${st.name}</td>
+                        <td class="py-3 px-3 text-cyan-400">${st.kluId}</td>
+                        <td class="py-3 px-3 text-slate-400 text-[11px]">${st.timestamp}</td>
+                        <td class="py-3 px-3 ${st.passed ? 'text-emerald-400 font-bold' : 'text-slate-400'}">${st.score}</td>
+                        <td class="py-3 px-3">
+                            <span class="px-2 py-0.5 rounded text-[10px] ${st.passed ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/40' : 'bg-slate-900 text-slate-500'}">
+                                ${st.passed ? 'ISSUED & LOCKED' : 'PENDING'}
+                            </span>
+                        </td>
+                        <td class="py-3 px-3 text-cyan-300 text-[11px] font-mono">${st.certId}</td>
+                        <td class="py-3 px-3 text-right">
+                            ${st.passed ? `
+                                <button onclick="promptResetStudent('${st.kluId}')" class="px-2.5 py-1 bg-red-950 hover:bg-red-900 text-red-300 border border-red-500/40 rounded text-[10px]">
+                                    RESET LOCK
+                                </button>
+                            ` : `<span class="text-slate-600 text-[10px]">NO LOCK</span>`}
+                        </td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function filterAdminTable() {
+            const query = document.getElementById('adminSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('#adminTableBody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        let pendingResetKluId = null;
+
+        function promptResetStudent(kluId) {
+            pendingResetKluId = kluId;
+            document.getElementById('resetModalTargetId').innerText = kluId;
+            document.getElementById('adminResetConfirmModal').classList.remove('hidden');
+        }
+
+        function closeResetModal() {
+            document.getElementById('adminResetConfirmModal').classList.add('hidden');
+            pendingResetKluId = null;
+        }
+
+        document.getElementById('confirmResetBtn').addEventListener('click', function() {
+            if (pendingResetKluId) {
+                removeCompletionRecord(pendingResetKluId);
+                saveLogEntry({
+                    id: Date.now(),
+                    name: 'ADMIN',
+                    kluId: pendingResetKluId,
+                    role: 'admin',
+                    timestamp: new Date().toLocaleString(),
+                    type: 'ADMIN_RESET_OVERRIDE'
+                });
+                showToast("OVERRIDE EXECUTED", `Attempt lock reset for ${pendingResetKluId}`, "success");
+                closeResetModal();
+                renderAdminDashboard();
+                if (currentUser && currentUser.kluId === pendingResetKluId) {
+                    applyUserSession();
+                }
+            }
+        });
+
+        function exportAuditLogJSON() {
+            const data = {
+                logs: getStoredLogs(),
+                completions: getStoredCompletions(),
+                exportedAt: new Date().toISOString()
+            };
+            const jsonStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", jsonStr);
+            dlAnchor.setAttribute("download", `KLU_CyberPulse_Audit_${Date.now()}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+            showToast("EXPORT COMPLETE", "Audit log JSON downloaded.", "success");
+        }
+
+        /* --------------------------------------------------------------------------
+           9. INITIALIZATION ON LOAD
+           -------------------------------------------------------------------------- */
+
+        window.onload = function() {
+            checkExistingSession();
+        };
+    </script>
+</body>
+</html>
